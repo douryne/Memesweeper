@@ -587,7 +587,7 @@ Sound::Sound( const std::wstring& fileName,LoopType loopType,
 		pData.release();
 		// needed for conversion to wide string
 		const std::string what = e.what();
-		throw CHILI_SOUND_FILE_EXCEPTION( fileName,std::wstring( what.begin(),what.end() ) );
+		/*throw CHILI_SOUND_FILE_EXCEPTION( fileName,std::wstring( what.begin(),what.end() ) );*/
 	}
 }
 

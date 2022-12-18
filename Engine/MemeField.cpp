@@ -11,6 +11,12 @@ void MemeField::Tile::SpawnMeme()
 	hasMeme = true;
 }
 
+void MemeField::Tile::DespawnMeme()
+{
+	assert(hasMeme);
+	hasMeme = false;
+}
+
 bool MemeField::Tile::HasMeme() const
 {
 	return hasMeme;
@@ -121,39 +127,56 @@ void MemeField::Tile::SetNeighborMemeCount( int memeCount )
 	nNeighborMemes = memeCount;
 }
 
-MemeField::MemeField( const Vei2& center,int width,int height,int nMemes )
-	:
-	width( width ),
-	height( height ),
-	field( new Tile[width * height] ),
-	topLeft( center - Vei2( width * SpriteCodex::tileSize,height * SpriteCodex::tileSize ) / 2 )
+void MemeField::SpawnField(const Vei2& mousePos)
 {
-	assert( nMemes > 0 && nMemes < width * height );
+	assert(nMemes > 0 && nMemes < width* height);
 	std::random_device rd;
-	std::mt19937 rng( rd() );
-	std::uniform_int_distribution<int> xDist( 0,width - 1 );
-	std::uniform_int_distribution<int> yDist( 0,height - 1 );
+	std::mt19937 rng(rd());
+	std::uniform_int_distribution<int> xDist(0, width - 1);
+	std::uniform_int_distribution<int> yDist(0, height - 1);
 
-	for( int nSpawned = 0; nSpawned < nMemes; ++nSpawned )
+
+	Vei2 mouse = ScreenToGrid(mousePos);
+	for (int nSpawned = 0; nSpawned < nMemes; ++nSpawned)
 	{
 		Vei2 spawnPos;
 		do
 		{
-			spawnPos = { xDist( rng ),yDist( rng ) };
-		}
-		while( TileAt( spawnPos ).HasMeme() );
+			spawnPos = { xDist(rng),yDist(rng) };
+		} while (TileAt(spawnPos).HasMeme());
 
-		TileAt( spawnPos ).SpawnMeme();
+		TileAt(spawnPos).SpawnMeme();
+
+		if (TileAt(mouse).HasMeme())
+		{
+			do
+			{
+				spawnPos = { xDist(rng),yDist(rng) };
+			} while (TileAt(spawnPos).HasMeme());
+			TileAt(spawnPos).SpawnMeme();
+			TileAt(mouse).DespawnMeme();
+		}
+
 	}
 
-	for( Vei2 gridPos = { 0,0 }; gridPos.y < height; gridPos.y++ )
+
+	for (Vei2 gridPos = { 0,0 }; gridPos.y < height; gridPos.y++)
 	{
-		for( gridPos.x = 0; gridPos.x < width; gridPos.x++ )
+		for (gridPos.x = 0; gridPos.x < width; gridPos.x++)
 		{
-			TileAt( gridPos ).SetNeighborMemeCount( CountNeighborMemes( gridPos ) );
+			TileAt(gridPos).SetNeighborMemeCount(CountNeighborMemes(gridPos));
 		}
 	}
 }
+
+MemeField::MemeField( const Vei2& center,int width,int height,int nMemes )
+	:
+	nMemes(nMemes),
+	width( width ),
+	height( height ),
+	field( new Tile[width * height] ),
+	topLeft( center - Vei2( width * SpriteCodex::tileSize,height * SpriteCodex::tileSize ) / 2 )
+{}
 
 MemeField::~MemeField()
 {

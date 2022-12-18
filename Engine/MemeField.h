@@ -24,6 +24,7 @@ private:
 		};
 	public:
 		void SpawnMeme();
+		void DespawnMeme();
 		bool HasMeme() const;
 		void Draw( const Vei2& screenPos,MemeField::State fucked,Graphics& gfx ) const;
 		void Reveal();
@@ -45,6 +46,8 @@ public:
 	void OnRevealClick( const Vei2& screenPos );
 	void OnFlagClick( const Vei2& screenPos );
 	State GetState() const;
+	void SpawnField(const Vei2& mousePos);
+	bool FirstClick = true;
 private:
 	void RevealTile( const Vei2& gridPos );
 	Tile& TileAt( const Vei2& gridPos );
@@ -53,6 +56,7 @@ private:
 	int CountNeighborMemes( const Vei2& gridPos );
 	bool GameIsWon() const;
 private:
+	int nMemes;
 	int width;
 	int height;
 	static constexpr int borderThickness = 10;

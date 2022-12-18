@@ -56,6 +56,15 @@ void Game::UpdateModel()
 				if( e.GetType() == Mouse::Event::Type::LPress )
 				{
 					const Vei2 mousePos = e.GetPos();
+					if (pField->FirstClick)
+					{
+						pField->FirstClick = false;
+						pField->SpawnField(mousePos);
+					}
+					if (pField->GetRect().Contains(mousePos))
+					{
+						pField->OnRevealClick(mousePos);
+					}
 					if( pField->GetRect().Contains( mousePos ) )
 					{
 						pField->OnRevealClick( mousePos );
@@ -85,15 +94,15 @@ void Game::UpdateModel()
 			switch( s )
 			{
 			case SelectionMenu::Size::Small:
-				CreateField( 8,4,5 );
+				CreateField(8, 6, 1);
 				state = State::Memesweeper;
 				break;
 			case SelectionMenu::Size::Medium:
-				CreateField( 14,7,15 );
+				CreateField(14, 8, 20);
 				state = State::Memesweeper;
 				break;
 			case SelectionMenu::Size::Large:
-				CreateField( 24,16,45 );
+				CreateField(24, 18, 431);
 				state = State::Memesweeper;
 				break;
 			}
